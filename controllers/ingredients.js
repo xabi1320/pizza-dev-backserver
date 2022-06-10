@@ -12,7 +12,7 @@ const getIngredients = async(req = request, res = response) => {
 
         const [total, ingredients] = await Promise.all([
             Ingredient.countDocuments(query),
-            Ingredient.find(query).populate('category', 'name').skip(Number(since)).limit(Number(limit)),
+            Ingredient.find(query).populate('category', 'name'),
         ]);
 
         res.json({

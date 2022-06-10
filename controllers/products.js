@@ -12,7 +12,7 @@ const getProducts = async(req = request, res = response) => {
 
         const [total, products] = await Promise.all([
             Product.countDocuments(query),
-            Product.find(query).populate('category', 'name').skip(Number(since)).limit(Number(limit)),
+            Product.find(query).populate('category', 'name'),
         ]);
 
         res.json({

@@ -12,7 +12,7 @@ const getCoupons = async(req = request, res = response) => {
 
         const [total, coupons] = await Promise.all([
             Coupon.countDocuments(query),
-            Coupon.find(query).skip(Number(since)).limit(Number(limit)),
+            Coupon.find(query),
         ]);
 
         res.json({
