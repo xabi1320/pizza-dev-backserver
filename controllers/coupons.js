@@ -5,7 +5,6 @@ const { Coupon } = require('../models');
 
 // Obtener Cupones - paginado - total - populate
 const getCoupons = async(req = request, res = response) => {
-
     try {
         const { since = 0, limit = 5 } = req.query;
         const query = { status: true };
@@ -15,7 +14,7 @@ const getCoupons = async(req = request, res = response) => {
             Coupon.find(query),
         ]);
 
-        res.json({
+        res.status(200).json({
             ok: true,
             total,
             coupons
@@ -29,13 +28,12 @@ const getCoupons = async(req = request, res = response) => {
 
 // Obtener cupon -populate{}
 const getCoupon = async(req = request, res = response) => {
-
     try {
         const { id } = req.params;
 
         const coupon = await Coupon.findById(id);
 
-        res.json({
+        res.status(200).json({
             ok: true,
             coupon
         });
@@ -48,8 +46,8 @@ const getCoupon = async(req = request, res = response) => {
 
 // Crear cupon
 const createCoupon = async(req = request, res = response) => {
-
     try {
+        const { img } = req.files ? req.files : req.body;
         const data = req.body;
         const description = data.description.toUpperCase();
         const couponDB = await Coupon.findOne({ description });
@@ -62,11 +60,10 @@ const createCoupon = async(req = request, res = response) => {
         }
 
         // Generar la data a guardar
-        // data.usuario = req.usuarioAutenticado._id;
         data.description = description
+        data.img = img ? await uploadFile(req) : '';
 
         const coupon = new Coupon(data);
-
         // Guaardar en DB
         await coupon.save();
 
@@ -76,19 +73,21 @@ const createCoupon = async(req = request, res = response) => {
         });
 
     } catch (error) {
-        console.log({ error });
-        throw new Error('something went wrong');
+        res.status(400).json({
+            ok: false,
+            msg: String(error),
+        });
     }
 }
 
 // Actualizar cupon
 const updateCoupon = async(req = request, res = response) => {
-
     try {
         const { id } = req.params;
         const { _id, status, ...data } = req.body
-        const description = data.description.toUpperCase();
-        data.description = description;
+        const description = data.description && data.description.toUpperCase();
+        data.description = data.description && description;
+        if (req.files) data.img = await uploadFile(req, undefined, true);
 
         const coupon = await Coupon.findByIdAndUpdate(id, data, { new: true });
 
@@ -98,22 +97,18 @@ const updateCoupon = async(req = request, res = response) => {
         });
 
     } catch (error) {
-        console.log({ error });
-        throw new Error('something went wrong');
+        res.status(400).json({
+            ok: false,
+            msg: String(error),
+        });
     }
 }
 
 
 // Borrar cupon - estado:false
 const deleteCoupon = async(req = request, res = response) => {
-
     try {
-
         const { id } = req.params;
-
-        //Fisicamente lo borramos
-        // const usuario = await Usuario.findByIdAndDelete(id);
-
         const coupon = await Coupon.findByIdAndUpdate(id, { status: false }, { new: true });
 
         res.json({
@@ -121,8 +116,10 @@ const deleteCoupon = async(req = request, res = response) => {
             coupon,
         });
     } catch (error) {
-        console.log({ error });
-        throw new Error('something went wrong');
+        res.status(400).json({
+            ok: false,
+            msg: String(error),
+        });
     }
 }
 

@@ -1,12 +1,12 @@
 const dbValidators = require('./db-validators');
 // const generarJWT = require('./generar-jwt');
 // const googleVerify = require('./google-verify');
-// const subirArchivos = require('./subir-archivos');
+const uploadFile = require('./upload-file');
 
 
 module.exports = {
     ...dbValidators,
     // ...generarJWT,
     // ...googleVerify,
-    // ...subirArchivos,
+    ...uploadFile,
 }

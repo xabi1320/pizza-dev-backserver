@@ -1,6 +1,9 @@
+const path = require('path');
+const fs = require('fs');
 const { request, response } = require('express');
 
 const { Product } = require('../models');
+const { uploadFile } = require('../utils');
 
 
 // Obtener productos - paginado - total - populate
@@ -15,15 +18,17 @@ const getProducts = async(req = request, res = response) => {
             Product.find(query).populate('category', 'name'),
         ]);
 
-        res.json({
+        res.status(200).json({
             ok: true,
             total,
             products
         });
 
     } catch (error) {
-        console.log({ error });
-        throw new Error('something went wrong');
+        res.status(400).json({
+            ok: false,
+            msg: String(error),
+        });
     }
 }
 
@@ -35,21 +40,23 @@ const getProduct = async(req = request, res = response) => {
 
         const product = await Product.findById(id).populate('category', 'name');
 
-        res.json({
+        res.status(200).json({
             ok: true,
             product
         });
 
     } catch (error) {
-        console.log({ error });
-        throw new Error('something went wrong');
+        res.status(400).json({
+            ok: false,
+            msg: String(error),
+        });
     }
 }
 
 // Crear producto
 const createProduct = async(req = request, res = response) => {
-
     try {
+        const { img } = req.files ? req.files : req.body;
         const data = req.body;
         const name = data.name.toUpperCase();
         const productDB = await Product.findOne({ name });
@@ -60,13 +67,11 @@ const createProduct = async(req = request, res = response) => {
                 msg: `Product '${productDB.name}', already exist`
             });
         }
-
         // Generar la data a guardar
-        // data.usuario = req.usuarioAutenticado._id;
-        data.name = name
+        data.name = name;
+        data.img = img ? await uploadFile(req) : '';
 
         const product = new Product(data);
-
         // Guaardar en DB
         await product.save();
 
@@ -76,19 +81,21 @@ const createProduct = async(req = request, res = response) => {
         });
 
     } catch (error) {
-        console.log({ error });
-        throw new Error('something went wrong');
+        res.status(400).json({
+            ok: false,
+            msg: String(error),
+        });
     }
 }
 
 // Actualizar producto
 const updateProduct = async(req = request, res = response) => {
-
     try {
         const { id } = req.params;
         const { _id, status, category, ...data } = req.body
-        const name = data.name.toUpperCase();
-        data.name = name;
+        const name = data.name && data.name.toUpperCase();
+        data.name = data.name && name;
+        if (req.files) data.img = await uploadFile(req, undefined, true);
 
         const product = await Product.findByIdAndUpdate(id, data, { new: true });
 
@@ -98,8 +105,10 @@ const updateProduct = async(req = request, res = response) => {
         });
 
     } catch (error) {
-        console.log({ error });
-        throw new Error('something went wrong');
+        res.status(400).json({
+            ok: false,
+            msg: String(error),
+        });
     }
 }
 
@@ -121,8 +130,10 @@ const deleteProduct = async(req = request, res = response) => {
             product,
         });
     } catch (error) {
-        console.log({ error });
-        throw new Error('something went wrong');
+        res.status(400).json({
+            ok: false,
+            msg: String(error),
+        });
     }
 }
 
