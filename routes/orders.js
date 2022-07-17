@@ -1,7 +1,7 @@
 const { Router } = require('express');
-const { check } = require('express-validator');
+const { check, body } = require('express-validator');
 
-const { getOrders, getOrder, createOrder, updateOrder } = require('../controllers/orders');
+const { getOrders, getOrder, createOrder, updateOrder, createYappyUrl } = require('../controllers/orders');
 
 const { existOrderID } = require('../utils');
 
@@ -24,12 +24,21 @@ router.get('/:id', [
 
 // Crear cupon - privado - Cualquier persona con un token válido 
 router.post('/', [
-    check('customer_data', 'Customer data is required').notEmpty(),
+    check('customerData', 'Customer data is required').notEmpty(),
     check('delivery', 'Delivery method is required').notEmpty(),
     check('description', 'Description is required').notEmpty(),
-    check('total_Amount', 'Total amount is required').notEmpty(),
+    check('totalAmount', 'Total amount is required').notEmpty(),
     validateFields,
 ], createOrder);
+
+// Crear enlace de pago con Yappy
+router.post('/pagosbg', [
+    check('customerData', 'Customer data is required').notEmpty(),
+    check('delivery', 'Delivery method is required').notEmpty(),
+    check('description', 'Description is required').notEmpty(),
+    check('totalAmount', 'Total amount is required').notEmpty(),
+    validateFields
+], createYappyUrl);
 
 // Actualizar - privado - Cualquiera con un token válido
 router.put('/:id', [

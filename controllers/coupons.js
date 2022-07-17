@@ -1,6 +1,7 @@
 const { request, response } = require('express');
 
 const { Coupon } = require('../models');
+const { uploadFile } = require('../utils');
 
 
 // Obtener Cupones - paginado - total - populate
@@ -21,8 +22,10 @@ const getCoupons = async(req = request, res = response) => {
         });
 
     } catch (error) {
-        console.log({ error });
-        throw new Error('something went wrong');
+        res.status(400).json({
+            ok: false,
+            msg: String(error),
+        });
     }
 }
 
@@ -39,8 +42,10 @@ const getCoupon = async(req = request, res = response) => {
         });
 
     } catch (error) {
-        console.log({ error });
-        throw new Error('something went wrong');
+        res.status(400).json({
+            ok: false,
+            msg: String(error),
+        });
     }
 }
 

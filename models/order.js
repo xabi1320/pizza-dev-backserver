@@ -2,7 +2,7 @@ const { Schema, model } = require('mongoose');
 
 
 const OrderSchema = Schema({
-    customer_data: {
+    customerData: {
         type: Object,
         require: [true, 'Customer data is required']
     },
@@ -11,15 +11,15 @@ const OrderSchema = Schema({
         required: [true, 'Delivery way is required']
     },
     description: {
-        type: Object,
+        type: Array,
         required: [true, 'Description is required']
     },
-    order_number: {
+    orderNumber: {
         type: Number,
         unique: true,
         required: [true, 'Order number is required']
     },
-    total_Amount: {
+    totalAmount: {
         type: Number,
         required: [true, 'Price is required']
     },
