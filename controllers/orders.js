@@ -97,7 +97,7 @@ const createYappyUrl = async(req = request, res = response)=>{
         discount: 0.0,
         taxes: null,
         orderId: null,
-        successUrl: "https://www.yappy.peqa.dev",
+        successUrl: "http://localhost:3000/seguimiento",
         failUrl: "https://www.yappy.peqa.dev",
         tel: process.env.TEL || "66666666",
         domain: process.env.DOMAIN || "https://yappy.peqa.dev",
