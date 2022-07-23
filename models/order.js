@@ -25,7 +25,7 @@ const OrderSchema = Schema({
     },
     status: {
         type: String,
-        default: 'In Progress',
+        default: 'preparing',
         required: true
     },
 }, {
@@ -36,7 +36,7 @@ const OrderSchema = Schema({
 });
 
 OrderSchema.methods.toJSON = function() {
-    const { _id, __v, status, ...data } = this.toObject();
+    const { _id, __v, ...data } = this.toObject();
     data.o_id = _id;
     return data;
 }
