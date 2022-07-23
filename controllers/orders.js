@@ -47,11 +47,11 @@ const createOrder = async(req = request, res = response) => {
         const data = req.body;
         const orderNumber = data.orderNumber;
         let [orderDB, count] = await Promise.all([
-            Order.findOne({ orderNumber: orderNumber }),
+            Order.findOne({orderNumber}),
             Order.count(),
         ]);
 
-        count ? data.orderNumber = count + 1 : data.orderNumber = 1;
+        count === 0 ? data.orderNumber = 1 : data.orderNumber = count + 1 ;
 
         if (orderDB) {
             return res.status(400).json({
@@ -66,7 +66,6 @@ const createOrder = async(req = request, res = response) => {
 
         //Validar Orden
         const validOrder = await validateOrder(req);
-
         if (!validOrder) {
             return res.status(400).json({
                 ok: false,

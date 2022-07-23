@@ -49,6 +49,7 @@ const validateOrder = ({body}) => {
             const order = {...body, description: newDescription, totalAmount}
             resolve(order);
         } catch (error) {
+            console.log(error)
             return reject(`${String(error)}`);
         }
     });
@@ -63,7 +64,7 @@ const validatePrices = (id, pizzas) => {
         } 
     });
 
-    if(pizzaObj.exist){
+    if(pizzaObj?.exist){
         return pizzaObj;
     }else{
         return pizzaObj = {exist: false}
